@@ -35,3 +35,4 @@ How to use:
     $> cd build/{{MYNAMESPACE}}/
     $> composer install
     ```
+1. Go to your MVC Example: http://localhost/RYMMVC/build/{{MYNAMESPACE}}/
