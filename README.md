@@ -10,6 +10,10 @@ The MVC framework includes the following 3 components:
 * Model
 * View
 
+Requirements:
+   1. A database with information. Ej: 
+      - A legacy database.
+      - The database from some application.
 
 How to use:
 
