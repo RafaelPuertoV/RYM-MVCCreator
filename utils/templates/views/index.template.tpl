@@ -1,6 +1,5 @@
-<link rel="stylesheet" href="./css/style.css">
 
-<h1> {{CLASS.NAME}} - List </h1>
+<h1> {{CLASS.PREFIX}}{{CLASS.NAME}} - List </h1>
 
 <table id="table-list" class="table table-striped">
    
@@ -8,5 +7,5 @@
 
 <script>
     setPrimaryKeyField('{{CLASS.PRIMARYKEY}}');
-    apiGetList('{{CLASS.NAME}}','table-list');
+    apiGetList('{{CLASS.PREFIX}}{{CLASS.NAME}}','table-list');
 </script>

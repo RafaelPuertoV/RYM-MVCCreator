@@ -5,7 +5,7 @@ namespace {{NAMESPACE}}\Models\Base;
 use {{NAMESPACE}}\MVC\MVCDataBase;
 
 
-class {{CLASS.NAME}}Base implements \JsonSerializable
+class {{CLASS.PREFIX}}{{CLASS.NAME}}Base implements \JsonSerializable
 {
     static $table = "{{TABLE.NAME.LOWCASE}}";
 

@@ -111,24 +111,78 @@ class RYMGenerator
     }
 
 
-    function generateCompose() {
-        $tmpList = array(
-            '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-        );
-        $dbClassTmp = file_get_contents(__DIR__.'/templates/composer.template.tpl');
+    function copyFolder($_currentFolder, $_destPath){
+        if ($_currentFolder == '') {
+            $_currentFolder = realpath('./public/css/');
+        }
+        if(!file_exists($_destPath)){
+            mkdir($_destPath,777,true);
+        }
+        $List  = scandir($_currentFolder);
+        $isEmpty = true;
+        foreach ($List as $pth) {
+            if ($pth != '.' && $pth != '..') {
+                $isEmpty = false;
+                break;
+            }
+        }
 
-        $classTmp = strtr( $dbClassTmp , $tmpList); 
-        
-        # Creating file:
-        $modelFileName = "composer.json";
-        $myfile = fopen($this->mvcPath.$modelFileName, "w");
-        fwrite($myfile, $classTmp );
-
-        return $modelFileName.' <span style="background:green; color:white; border-radius: 30px;"> &nbsp;&nbsp;created&nbsp;&nbsp; </span>';
+        foreach ($List as $pth) {
+            if ($pth == '.' || $pth == '..') {
+                continue;
+            }
+            if (is_dir($_currentFolder . '/' . $pth)) {
+                self::copyFolder($_currentFolder . '/' . $pth, $_destPath . '/' . $pth) ;
+            } elseif (is_file($_currentFolder . '/' . $pth)) {
+                $tmpList = array(
+                    '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
+                );
+                $this->copyFile($_currentFolder . '/' . $pth, $_destPath . '/' . $pth);
+            }
+        }
     }
+
+
+    function copyFile($_origPath, $_destPath){
+        if(!file_exists(dirname($_destPath))){
+            mkdir(dirname($_destPath),777,true);
+        }
+        
+        if (is_file($_origPath )) {
+            $tmpList = array(
+                '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
+                '{{CLASS.PREFIX}}' => $this->config['MVC_PREFIX']
+            );
+
+            $fileInfo = file_get_contents($_origPath);
+            $view = strtr( $fileInfo , $tmpList);
+            $mysBaseFile = fopen($_destPath, "w");
+            fwrite($mysBaseFile, $view );
+            fclose($mysBaseFile);
+        }
+    }
+
+    
 
     function generateMVCFiles() {
         $this->copyFolder(__DIR__.'/templates/MVC/', $this->mvcPath.'src/MVC');
+        $this->copyFile(__DIR__.'/templates/composer.template.tpl',$this->mvcPath. "composer.json");
+
+        #public
+        $this->copyFolder(__DIR__.'/templates/public/img/', $this->publicPath.'/img/');
+        $this->copyFolder(__DIR__.'/templates/public/css/', $this->publicPath.'/css/');
+        $this->copyFolder(__DIR__.'/templates/public/js/', $this->publicPath.'/js/');
+        $this->copyFile(__DIR__.'/templates/public/index.php',$this->publicPath.'index.php');
+        $this->copyFile(__DIR__.'/templates/public/.htaccess',$this->publicPath.'.htaccess');
+
+        #controller
+        $this->copyFile(__DIR__.'/templates/controller/DefaultController.php',$this->mvcControllerBasePath. $this->config['MVC_PREFIX']. "DefaultController.php");
+
+        # Views 
+        $this->copyFolder(__DIR__.'/templates/views/core/', $this->mvcViewsPath.'/Core/');
+        $this->copyFile(__DIR__.'/templates/views/homepage.php',$this->mvcViewsPath. "homepage.php");
+
+
         return 'MVCFiles <span style="background:green; color:white; border-radius: 30px;"> &nbsp;&nbsp;created&nbsp;&nbsp; </span>';
     }
 
@@ -155,9 +209,6 @@ class RYMGenerator
         $baseHTML = '<div style="background: #dfdfdf;"> <span> MVC Base classes: </span> <br> <ul>';
         $baseHTML .= "<li> ".$this->generateConfigFile()."</li>";
         $baseHTML .= "<li> ".$this->generateMVCFiles()."</li>";
-        $baseHTML .= "<li> ".$this->generateCompose()."</li>";
-        $baseHTML .= "<li> ".$this->generatePublicIndex()."</li>";
-        $baseHTML .= "<li> ".$this->generatePublicAPI()."</li>";
         $baseHTML.='</div>';
         return $baseHTML;
     }
@@ -175,7 +226,8 @@ class RYMGenerator
 
         $tmpList = array(
             '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-            '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$_table->getModelNameClass(),
+            '{{CLASS.PREFIX}}' => $this->config['MVC_PREFIX'],
+            '{{CLASS.NAME}}'=> $_table->getModelNameClass(),
             '{{TABLE.NAME.LOWCASE}}'=> $_table->tableName,
             '{{TABLE.PRIMARYKEYS.ARRAY}}'=> $_table->getPrimaryKeysTemplate(),
             '{{ATTRIBUTES.LIST}}'=> $attribList ,
@@ -193,7 +245,8 @@ class RYMGenerator
 
         $tmpList = array(
             '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-            '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$_table->getModelNameClass(),
+            '{{CLASS.PREFIX}}' => $this->config['MVC_PREFIX'],
+            '{{CLASS.NAME}}'=> $_table->getModelNameClass(),
             '{{TABLE.NAME.LOWCASE}}'=> $_table->tableName,
             '{{ATTRIBUTES.LIST}}'=> $attribList ,
             '{{ATTRIBUTES.GET.SET}}'=> $attribGetSetList,
@@ -234,7 +287,7 @@ class RYMGenerator
 
 
     function generateViewsAll() {
-        $this->generateViewsCore();
+        
         $viewsHtml = '<div style="background: #dfdfdf;"> <h2><span> Views: </span> </h2><br> <ul>';
         foreach ($this->tableList as $table) {
             if(count($table->foreingKeys)==0 ){
@@ -263,7 +316,8 @@ class RYMGenerator
 
         $tmpList = array(
             '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-            '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$_table->getModelNameClass(),
+            '{{CLASS.PREFIX}}' => $this->config['MVC_PREFIX'],
+            '{{CLASS.NAME}}'=> $_table->getModelNameClass(),
             '{{CLASS.PRIMARYKEY}}'=> count($_table->primaryKeys)?$_table->primaryKeys[0]:'id',
             '{{CONTROLLER.SETITEM.VALUES}}'=> $attribSetValues 
         );
@@ -287,137 +341,7 @@ class RYMGenerator
     #                                                         #
     ###########################################################
 
-    function copyFolder($_currentFolder, $_destPath){
-        if ($_currentFolder == '') {
-            $_currentFolder = realpath('./public/css/');
-        }
-        if(!file_exists($_destPath)){
-            mkdir($_destPath,777,true);
-        }
-        $List  = scandir($_currentFolder);
-        $isEmpty = true;
-        foreach ($List as $pth) {
-            if ($pth != '.' && $pth != '..') {
-                $isEmpty = false;
-                break;
-            }
-        }
-
-        foreach ($List as $pth) {
-            if ($pth == '.' || $pth == '..') {
-                continue;
-            }
-            if (is_dir($_currentFolder . '/' . $pth)) {
-                self::copyFolder($_currentFolder . '/' . $pth, $_destPath . '/' . $pth) ;
-            } elseif (is_file($_currentFolder . '/' . $pth)) {
-                $tmpList = array(
-                    '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-                );
-
-                $fileInfo = file_get_contents($_currentFolder . '/' . $pth);
-                $view = strtr( $fileInfo , $tmpList);
-                $mysBaseFile = fopen($_destPath . '/' . $pth, "w");
-                fwrite($mysBaseFile, $view );
-                fclose($mysBaseFile);
-            }
-        }
-    }
-    function generatePublicIndex() {
-        $attribSetValues ='';
-
-        $this->copyFolder(__DIR__.'/templates/public/img/', $this->publicPath.'/img/');
-        $this->copyFolder(__DIR__.'/templates/public/css/', $this->publicPath.'/css/');
-        $this->copyFolder(__DIR__.'/templates/public/js/', $this->publicPath.'/js/');
-
-        ### HOMEPAGE ###
-
-        $viewHowe = file_get_contents(__DIR__.'/templates/views/homepage.php');
-        
-        # Creating Base file:
-        $viewHoweFileName = "homepage.php";
-        #echo $this->mvcControllerBasePath.$viewHoweFileName;die();
-        $mysBaseFile = fopen($this->mvcViewsPath.$viewHoweFileName, "w");
-        fwrite($mysBaseFile, $viewHowe );
-        fclose($mysBaseFile);
-
-        $controllerRequestTemp = file_get_contents(__DIR__.'/templates/public/reques.get.tpl');
-        $controllerRequestApi = '';
-        $controllerMethodList = '';
-        foreach ( $this->tableList as $table) {
-            if(count($table->foreingKeys)>0 ){
-                continue;
-            }
-            $controllerMethodList .= '
-    $methodList[] = "'.$this->config['MVC_PREFIX'].$table->getModelNameClass().'";'; 
-            $tmpList = array(
-                '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-                '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$table->getModelNameClass(),
-                '{{CLASS.PRIMARYKEY}}'=> count($table->primaryKeys)?$table->primaryKeys[0]:'id',
-            );
-            
-            $controllerRequestApi .= strtr( $controllerRequestTemp , $tmpList);
-        }
-
-        $viewIndex = file_get_contents(__DIR__.'/templates/public/index.php');
-        $tmpList = array(
-            '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-            '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$table->getModelNameClass()."Controller",
-            '{{CLASS.PRIMARYKEY}}'=> count($table->primaryKeys)?$table->primaryKeys[0]:'id',
-            '{{CONTROLLER.METHODLIST}}'=> $controllerMethodList,
-            '{{CONTROLLER.GET.BLOCK}}'=> $controllerRequestApi
-        );
-        $view = strtr( $viewIndex , $tmpList);
-        # Creating Base file:
-        $viewFileName = "index.php";
-        #echo $this->mvcControllerBasePath.$viewFileName;die();
-        $mysBaseFile = fopen($this->publicPath.$viewFileName, "w");
-        fwrite($mysBaseFile, $view );
-        fclose($mysBaseFile);
-
-        return $viewFileName.' <span style="background:green; color:white; border-radius: 30px;"> &nbsp;&nbsp;created&nbsp;&nbsp; </span>';
-    }
-
-    function generatePublicAPI() {
-
-
-      
-        $controllerRequestTemp = file_get_contents(__DIR__.'/templates/public/api.reques.get.tpl');
-        $controllerRequestApi = '';
-        foreach ( $this->tableList as $table) {
-            if(count($table->foreingKeys)>0 ){
-                continue;
-            }
-            $tmpList = array(
-                '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-                '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$table->getModelNameClass(),
-                '{{CLASS.PRIMARYKEY}}'=> count($table->primaryKeys)?$table->primaryKeys[0]:'id',
-            );
-            $controllerRequestApi .= strtr( $controllerRequestTemp , $tmpList);
-        }
-
-        $viewIndex = file_get_contents(__DIR__.'/templates/public/api.php');
-        $tmpList = array(
-            '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-            '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$table->getModelNameClass()."Controller",
-            '{{CLASS.PRIMARYKEY}}'=> count($table->primaryKeys)?$table->primaryKeys[0]:'id',
-            '{{CONTROLLER.GET.BLOCK}}'=> $controllerRequestApi
-        );
-        $view = strtr( $viewIndex , $tmpList);
-        # Creating Base file:
-        $viewFileName = "api.php";
-        #echo $this->mvcControllerBasePath.$viewFileName;die();
-        $mysBaseFile = fopen($this->publicPath.$viewFileName, "w");
-        fwrite($mysBaseFile, $view );
-        fclose($mysBaseFile);
-
-        return $viewFileName.' <span style="background:green; color:white; border-radius: 30px;"> &nbsp;&nbsp;created&nbsp;&nbsp; </span>';
-    }
-
-    
-    function generateViewsCore() {
-        $this->copyFolder(__DIR__.'/templates/views/core/', $this->mvcViewsPath.'/Core/');
-    }
-
+       
     function generateViews(RYMTable $_table) {
       
         $attribSetValues ='';
@@ -427,7 +351,8 @@ class RYMGenerator
 
         $tmpList = array(
             '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-            '{{CLASS.NAME}}'=> $this->config['MVC_PREFIX'].$_table->getModelNameClass(),
+            '{{CLASS.PREFIX}}' => $this->config['MVC_PREFIX'],
+            '{{CLASS.NAME}}'=> $_table->getModelNameClass(),
             '{{CLASS.PRIMARYKEY}}'=> $_table->primaryKeys[0],
             '{{CONTROLLER.SETITEM.VALUES}}'=> $attribSetValues 
         );

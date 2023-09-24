@@ -10,6 +10,11 @@ class MVCController
         return __DIR__.'/../../../';
     }
 
+    public static function publicPath()
+    {
+        return self::basePath().'public/'; 
+    }
+
     public static function srcPath()
     {
         return self::basePath().'src/';
@@ -32,5 +37,19 @@ class MVCController
     {
         return self::srcPath().'Views/';
     }
-}
 
+    public static function getContollerClasses()
+    {
+        $List  = scandir(self::ControllersPath());
+        $ctllrList = array();
+        foreach ($List as $pth) {
+            if ($pth == '.' || $pth == '..') {
+                continue;
+            }
+            if (is_file(self::ControllersPath() . $pth)) {
+                $ctllrList[] = str_replace(".php", "", $pth) ;
+            } 
+        }
+        return $ctllrList;
+    }
+}

@@ -2,21 +2,21 @@
 
 namespace {{NAMESPACE}}\Controllers;
 
-use {{NAMESPACE}}\Models\{{CLASS.NAME}};
+use {{NAMESPACE}}\Models\{{CLASS.PREFIX}}{{CLASS.NAME}};
 use {{NAMESPACE}}\MVC\Http\HTTPResponse;
 
-class {{CLASS.NAME}}Controller
+class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 {
     
     public function index($_request)
     {
         if($_request['actionType'] == 'viewForm'){
 
-            $view = file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.NAME}}/index.php');
+            $view = file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
             $containerView = HTTPResponse::renderView($view,array()) ;
             $parameters = array( 
                 '{{DATABASE.NAME}}' => DB_NAME , 
-                '{{MVC.NAMESPACE}}' => '{{NAMESPACE}} :: {{CLASS.NAME}}',
+                '{{MVC.NAMESPACE}}' => '{{NAMESPACE}} :: {{CLASS.PREFIX}}{{CLASS.NAME}}',
                 '{{APP.CONTAINER}}' => $containerView
             );
 
@@ -32,7 +32,7 @@ class {{CLASS.NAME}}Controller
             $_request['mvc_page']=1;
         }
 
-        $items = {{CLASS.NAME}}::all( array('page' => $_request['mvc_page'] ));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::all( array('page' => $_request['mvc_page'] ));
         $response = array(
             "data" => $items,
             'status' => 200
@@ -44,7 +44,7 @@ class {{CLASS.NAME}}Controller
     public function store($_request)
     {
  
-        $item = new {{CLASS.NAME}}();
+        $item = new {{CLASS.PREFIX}}{{CLASS.NAME}}();
         
         {{CONTROLLER.SETITEM.VALUES}}
         
@@ -60,18 +60,18 @@ class {{CLASS.NAME}}Controller
     public function show($_request)
     {
 
-        $item = {{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $item = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
 
         if($_request['actionType'] == 'viewForm'){
 
             $parameters = array( );
             
-            $view = "Hello this is the {{CLASS.NAME}}-Edit Page" ;  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.NAME}}/index.php');
+            $view = "Hello this is the {{CLASS.PREFIX}}{{CLASS.NAME}}-Edit Page" ;  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
             $containerView = HTTPResponse::renderView($view,$parameters) ;
 
             $parameters = array( 
                 '{{DATABASE.NAME}}' => DB_NAME , 
-                '{{MVC.NAMESPACE}}' => '{{NAMESPACE}} :: {{CLASS.NAME}}',
+                '{{MVC.NAMESPACE}}' => '{{NAMESPACE}} :: {{CLASS.PREFIX}}{{CLASS.NAME}}',
                 '{{APP.CONTAINER}}' => $containerView
             );
 
@@ -90,7 +90,7 @@ class {{CLASS.NAME}}Controller
 
     public function update( $_request )
     {
-        $items = {{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
         if(is_null($items) || count($items)==0 ){       
              $response = array(
                 "message" => "Not found",
@@ -111,7 +111,7 @@ class {{CLASS.NAME}}Controller
 
     public function destroy($_request)
     {
-        $items = {{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
 
         if(is_null($items) || count($items)==0 ){       
              $response = array(

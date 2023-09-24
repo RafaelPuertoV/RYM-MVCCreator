@@ -14,6 +14,7 @@ class HTTPResponse
         if( is_file($_templateFile) && file_exists($_templateFile)){
             $teplateView = file_get_contents($_templateFile);
         }
+        $_valueList['{{WEB.ROOT}}']= \{{NAMESPACE}}\MVC\MVCRequesHandler::$web_root;
         return strtr( $teplateView , $_valueList);
     }
 

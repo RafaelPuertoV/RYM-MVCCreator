@@ -8,7 +8,7 @@
 
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-	<link rel="stylesheet" href="./css/style.css" ></script>
+	<link rel="stylesheet" href="{{WEB.ROOT}}css/style.css" ></script>
 
 	<style type="text/css">
 		.caption-info{
@@ -18,14 +18,22 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script src="./js/main.js" crossorigin="anonymous"></script>
+	<script src="{{WEB.ROOT}}/js/main.js" crossorigin="anonymous"></script>
+
+	<script>
+		setWebUrl('{{WEB.ROOT}}'); 
+		$( document ).ready(function() {
+			loadCatalog();
+		});
+	
+	</script>
 </head>
 
 <div class="page-header">
 	<div class="media">
 	  <div class="media-left hidden-xs">
 	    <a href="#">
-	      <img class="media-object" src="./img/logo.png"  alt="logo">
+	      <img class="media-object" src="{{WEB.ROOT}}/img/logo.png"  alt="logo">
 	    </a>
 	  </div>
 	  <div class="media-body">
@@ -33,6 +41,27 @@
         <small> Simple example - {{MVC.NAMESPACE}} </small></h1>
 	  </div>
 	</div>
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+		  <!-- Brand and toggle get grouped for better mobile display -->
+		  <div class="navbar-header">
+			<a class="navbar-brand" href="#"> RYMAPP </a>
+		  </div>
+	  
+		  <!-- Collect the nav links, forms, and other content for toggling -->
+		  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+			  <li ><a href="{{WEB.ROOT}}">Home </a></li>
+			  <li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Catalog <span class="caret"></span></a>
+				<ul id="catalog-list" class="dropdown-menu">
+				</ul>
+			  </li>
+			</ul>
+			
+		  </div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
+	  </nav>
 </div>
 
 <body>
@@ -43,6 +72,7 @@
 
 <div class="page-footer">
 	Simple MVC created with RYMMVCCreator
+	<br> Project website: <a href="https://github.com/RafaelPuertoV/RYMMVCCreator"> RYMMVCCreator </a>
+	<br> Created by <a href="https://github.com/RafaelPuertoV"> RafaelPuertoV </a>
 </div>
-
 </html>
