@@ -1,4 +1,13 @@
 <?php
+/**
+ * Base Model 
+ *
+ * @category   Pro
+ * @package    RYMMVCCreator
+ * @author     Rafael Puerto <rafael.puerto.v@gmail.com>
+ * @link       https://github.com/RafaelPuertoV/RYMMVCCreator
+ * @see        RYMMCreator
+ */
 
 namespace {{NAMESPACE}}\Models\Base;
 
@@ -62,7 +71,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Base implements \JsonSerializable
             " . $whereQ . $limit, $whereParameters ,__CLASS__);
 
         if (count($objList) > 0) {
-            return $objList;
+            return $objList; 
         }else{
             return null;
         }

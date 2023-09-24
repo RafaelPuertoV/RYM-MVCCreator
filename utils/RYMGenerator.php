@@ -7,6 +7,8 @@ require('RYMColumn.php');
 class RYMGenerator 
 {
     var $db = null ;
+
+    var $dbColumnTypes;
     var $config;
     var $tableList;
 
@@ -30,6 +32,7 @@ class RYMGenerator
       
     public function __construct() {
         $this->db = new RYMDatabase();
+        $this->dbColumnTypes=array();
         $this->tableList = array();
         $this->config=include(__DIR__.'/../config.inc.php');
         $this->config["DataBaseClass"] = "MVCDataBase";
@@ -220,8 +223,13 @@ class RYMGenerator
         $attribGetSetList ='';
         
         foreach ( $_table->columns as $attrib) {
-            $attribList .= str_replace('{{ATTRIBUTES.NAME}}',$attrib->columnName, $this->modelAttribItemTmp ); 
-            $attribGetSetList .= str_replace('{{ATTRIBUTES.NAME}}',$attrib->columnName, $this->modelAttribGetSetTmp ); 
+            $this->dbColumnTypes[$attrib->DBType]=$attrib->DBType;
+            $tmpList = array(
+                '{{ATTRIBUTES.NAME}}' => $attrib->columnName,
+                '{{ATTRIBUTES.TYPE}}' => $attrib->getPHPType(),
+            );
+            $attribList .=  strtr( $this->modelAttribItemTmp , $tmpList); 
+            $attribGetSetList .=  strtr( $this->modelAttribGetSetTmp , $tmpList); 
         }
 
         $tmpList = array(
@@ -270,6 +278,7 @@ class RYMGenerator
             $modelHtml .= "<li> ".$this->generateModel($table)."</li>";
         }
         $modelHtml.='</div>';
+        
         return $modelHtml;
     }
 

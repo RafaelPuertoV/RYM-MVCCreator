@@ -1,8 +1,6 @@
 <?php
 
-namespace RYMAPP\MVC;
-
-
+namespace {{NAMESPACE}}\MVC;
 
 class MVCRequesHandler
 {

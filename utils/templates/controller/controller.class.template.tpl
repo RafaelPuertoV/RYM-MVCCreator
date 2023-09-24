@@ -4,6 +4,7 @@ namespace {{NAMESPACE}}\Controllers;
 
 use {{NAMESPACE}}\Models\{{CLASS.PREFIX}}{{CLASS.NAME}};
 use {{NAMESPACE}}\MVC\Http\HTTPResponse;
+use {{NAMESPACE}}\MVC\Forms\MVCForm;
 
 class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 {
@@ -43,7 +44,17 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 
     public function store($_request)
     {
- 
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        if(is_null($items) || count($items)==0 ){       
+             $response = array(
+                "message" => "Not found",
+                'status' => 404
+            );
+            HTTPResponse::json($response);
+            exit();
+        }
+        
+        $item = $items[0];
         $item = new {{CLASS.PREFIX}}{{CLASS.NAME}}();
         
         {{CONTROLLER.SETITEM.VALUES}}
@@ -59,14 +70,25 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 
     public function show($_request)
     {
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        if(is_null($items) || count($items)==0 ){       
+             $response = array(
+                "message" => "Not found",
+                'status' => 404
+            );
+            HTTPResponse::json($response);
+            exit();
+        }
 
-        $item = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $item = $items[0];
 
         if($_request['actionType'] == 'viewForm'){
 
+            $Form = new MVCForm($item);
+
             $parameters = array( );
             
-            $view = "Hello this is the {{CLASS.PREFIX}}{{CLASS.NAME}}-Edit Page" ;  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
+            $view = $Form->getForm();  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
             $containerView = HTTPResponse::renderView($view,$parameters) ;
 
             $parameters = array( 
@@ -99,7 +121,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
             HTTPResponse::json($response);
             exit();
         }
-        $item = items[0];
+        $item = $items[0];
         {{CONTROLLER.SETITEM.VALUES}}
         $item->update();
         $response = array(
