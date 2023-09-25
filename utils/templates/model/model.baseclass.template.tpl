@@ -127,6 +127,48 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Base implements \JsonSerializable
             ,$whereParameters);
     }
 
+    public function update() 
+    {
+$parameters = get_class_vars(get_class());
+        $whereQ = '';
+        $whereParameters = array();
+        foreach(self::$primarykey as $column ){
+            $getMethod= "get_".$column;
+            $whereParameters['param'.$column] =  $this->$getMethod();
+            if($whereQ!=''){
+                $whereQ.=' AND ';
+            }
+            $whereQ.=$column.'=:param'.$column;
+        }
+
+        $setColumnValues = '';
+        foreach($parameters as $column => $columnValue  ){
+            if( $column =='' || 
+                $column == 'table' || 
+                $column == 'primarykey' || 
+                $column == 'db' ||
+                $column == "sQuery" ||
+                $column == "settings" ||
+                $column == "bConnected" ||
+                $column == "logPath" ||
+                $column == "parameters" || 
+                isset($whereParameters['param'.$column]) ){
+                continue;
+            }
+            $getMethod= "get_".$column;
+            $whereParameters['param'.$column] =  $this->$getMethod();
+            if($setColumnValues!=''){
+                $setColumnValues.=' , ';
+            }
+
+            $setColumnValues.= $column.'=:param'.$column;
+        }
+        $update = self::$db->query("UPDATE ".self::$table."
+            SET ".$setColumnValues."
+            WHERE ".$whereQ ,
+            $whereParameters);
+    }
+
     public function jsonSerialize()
     {
         return get_object_vars($this);

@@ -1,2 +1,2 @@
     
-        $item->set_{{ATTRIBUTES.NAME}}($_request['$_{{ATTRIBUTES.NAME}}']);
+        $item->set_{{ATTRIBUTES.NAME}}($_request['{{ATTRIBUTES.NAME}}']);

@@ -1,6 +1,7 @@
 <?php
 
 namespace {{NAMESPACE}}\MVC\Forms;
+use {{NAMESPACE}}\MVC\Forms\MVCFormTemplates;
 
 class MVCAbstractForm{
 
@@ -11,214 +12,212 @@ class MVCAbstractForm{
 	 */
 	protected function formHeader($header){
 
-		return "<tr>\t\n<td colspan='2' id='headerTitle' align='center'>\t\n<h2>$header</h2>\t\n</td>\t\n</tr>\t\n";
+		return '<div class="text-center"> <h2> '.$header .'</h2></div>';
+	}
+	protected function formFooter($html){
+
+		return '<div class="text-center"> <h2> '.$html .'</h2></div>';
 	}
 	
 	
 	protected function hidden($name, $value){
-
-		return "<input name='$name' id='$name' type='hidden' value='$value'/>";
-	}
-	
-	
-	protected function calendar($label, $name, $title='', $value=''){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_VALUE}}'=> $value
+		);
 			
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong><img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'> <input class='form-control' type='date' id='_$name' name='$name' value='$value'/></td></tr>";
-
-		return $elemenHTML;
-	}
-	
-	protected function entryText($label, $name, $event = "", $title = "", $value='', $readonly='', $class='form-control' , $placeholder='',$disabled=''){
-			
-		$elemenHTML = '';
-		if($title!=''){
-				
-			$elemenHTML .="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";	
-		}else{
-			$elemenHTML .="<tr><td class='formHead'><strong><label>$label</label></strong></td></tr>";
-		}
-                if($disabled!=''){
-                    $dis = "disabled";
-                }else{
-                    $dis="";
-                }
-		if($readonly!=''){
-				
-			$elemenHTML .="<tr><td class='inputRow'><input class='$class' type='text' id='_$name' name='$name' value='$value' readonly='true' $dis /></td></tr>";
-		}else{
-			$elemenHTML .="<tr><td class='inputRow'><input class='$class' type='text' id='_$name' name='$name' placeholder='$placeholder' value='$value' $dis /></td></tr>";
-			$elemenHTML .="<tr><td><label class='info' id='inf_$name' value=''></label></td></tr>";
-		}
-		return $elemenHTML;
-	}
-
-	protected function entryTextConf($label, $name, $event = "", $title = "", $value='', $readonly='', $class='form-control' , $placeholder=''){
-		
-		$elemenHTML = '';
-		if($title!=''){
-				
-			$elemenHTML .="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";	
-		}else{
-			$elemenHTML .="<tr><td class='formHead'><strong><label>$label</label></strong></td></tr>";
-		}
-		if($readonly!=''){
-				
-			$elemenHTML .="<tr><td class='inputRow'><input class='$class' type='text' id='_conf$name' name='$name' value='$value' readonly='true'/></td></tr>";
-		}else{
-			$elemenHTML .="<tr><td class='inputRow'><input class='$class' type='text' id='_conf$name' name='$name' placeholder='$placeholder' value='$value'/></td></tr>";
-			$elemenHTML .="<tr><td><label class='info' id='inf_$name' value=''></label></td></tr>";
-		}
-		return $elemenHTML;
-	}
+        $elemenHTML = strtr( MVCFormTemplates::hidden() , $tmpList); 
         
-	
-	protected function textArea($label, $name, $value='', $title=''){
-
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'><textarea id='_$name' name='$name' cols='40' rows='5'>$value</textarea></td></tr>";
-		return $elemenHTML;
+		return $elemenHTML ;
 	}
 	
 	
-	protected function textAreaDoubleRow($label, $name, $value = '', $title='') {
-
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'><textarea id='$name' name='$name' cols='40' rows='5'>$value</textarea></td></tr>";
-		return $elemenHTML;
-	}
-	
-	protected function _file($label, $name, $title='',$class=''){
-
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'><input type='file' id='_$name' class='$class' name='$name' /></td></tr>";
-		return $elemenHTML;
-	}
-	
-	protected function entryPassword($label, $size, $name){
-
-		$elemenHTML ="<tr>\t\n<td class='formColumn label-column'>\t\n";
-		$elemenHTML .="<strong class='tstrong'>$label:</strong>\t\n</td>\t\n";
-		$elemenHTML .="<td class='formColumn value-column'>\t\n";
-		$elemenHTML .="<input type='password' name='$name' maxlength='$size'/>\t\n</td>\t\n</tr>\t\n";
-		return $elemenHTML;
-	}
-	
-	protected function entryPasswordTwoRows($label, $size, $name, $class='form-control'){
-	
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong> </td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'><input type='password' class='$class' name='$name' maxlength='$size'/></td></tr>";
-		return $elemenHTML;
-	}
-	
-	
-	protected function select($label, $name, $event, $options, $selected='', $disabled='', $title='', $class=''){
+	protected function calendar_date($label, $name,  $value='',  $placeholder = '' ){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_VALUE}}'=> $value,
+			'{{MVC_PLACEHOLDER}}' => $placeholder
+		);
 			
-		$elemenHTML ="<tr><td class='formHead'><strong><label id='lbl$name'>$label</label></strong><img id='img$name' title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'>";
-    	if($event!='' && $disabled==''){
+        $elemenHTML = strtr( MVCFormTemplates::calendar_date() , $tmpList); 
 
-			$elemenHTML .="<select id='_$name' name='$name' class='$class' onchange=\"".$event."\">\t\n";
-		}elseif($disabled!=''){
-				
-			$elemenHTML .="<select id='_$name' class='$class' disabled='disabled'' name='$name' onchange=\"".$event."\">\t\n";
-		}else{
-			$elemenHTML .="<select id='_$name' class='$class' name='$name' >\t\n";
-		}
+		return $elemenHTML;
+	}
+
+	protected function calendar_datetime($label, $name,  $value='',  $placeholder = '' ){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_VALUE}}'=> $value,
+			'{{MVC_PLACEHOLDER}}' => $placeholder
+		);
+			
+        $elemenHTML = strtr( MVCFormTemplates::calendar_datetime() , $tmpList); 
+
+		return $elemenHTML;
+	}
+	
+	protected function entryText( $name, $label, $value='',$placeholder='', $maxLength = 1024 , $readonly=''){
+		
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_VALUE}}'=> $value,
+			'{{MVC_PLACEHOLDER}}' => $placeholder,
+			'{{MVC_MAXLENGTH}}' => $maxLength,
+			'{{MVC_READONLY}}' => $readonly 
+		);
+
+        $elemenHTML = strtr( MVCFormTemplates::entryText() , $tmpList); 
+
+		return $elemenHTML;
+	}
+	
+	protected function textArea($name,  $label, $value='' ){
+
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_VALUE}}'=> $value
+		);
+
+        $elemenHTML = strtr( MVCFormTemplates::textArea() , $tmpList); 
+		
+		return $elemenHTML;
+	}
+	
+	
+	protected function _file($name, $label ){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+		);
+
+        $elemenHTML = strtr( MVCFormTemplates::file() , $tmpList); 
+		return $elemenHTML;
+	}
+	
+	protected function entryPassword($name, $label, $maxLength ){
+
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_VALUE}}'=> $value,
+			'{{MVC_PLACEHOLDER}}' => $placeholder,
+			'{{MVC_MAXLENGTH}}' => $maxLength,
+			'{{MVC_READONLY}}' => $readonly 
+		);
+
+        $elemenHTML = strtr( MVCFormTemplates::entryPasswords() , $tmpList); 
+
+		return $elemenHTML;
+	}
+	
+	
+	protected function select( $name, $label, $options, $selected='' ){
+		
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+		);
+
+		$idx=0;
 		foreach($options as $option){
-				
-			if($option['label']===$selected || $option['value']==$selected){
-			
-				$elemenHTML .="<option value='".$option['value']."' selected='selected'>".$option['label']."</option>\t\n";
-			}else{
-				$elemenHTML .="<option value='".$option['value']."'>".$option['label']."</option>\t\n";
-			}
+			$tmpList['{{MVC_OPTION'.$idx.'_LABEL}}'] = $option['label'];
+			$tmpList['{{MVC_OPTION'.$idx.'_VALUE}}'] = $option['value'];
+			$tmpList['{{MVC_OPTION'.$idx.'_SELECTED}}']= $option['value']==$selected ? 'selected':'';
+
+			$idx++;
 		}
-    	$elemenHTML .="</select></td></tr>";
+		
+		
+		$elemenHTML = strtr( MVCFormTemplates::select(count($options)) , $tmpList); 
+
 		return $elemenHTML;
 	}
 	
 	
 	protected function autocomplete($label, $name,$value='')
 	{
-		
-		$elemenHTML = "<div class=\"ui-widget\">";
-		
-		$elemenHTML .= "<label for=\"_".$name."\">".$label.": </label>";
-		$elemenHTML .= "<input id=\"_".$name."\" name=\"".$name."\" />";
-		$elemenHTML .= "</div>";
-		return $elemenHTML;
-	}
-	
-	
-	protected function autocompleteTwoColumns($label, $name,$valuename='',$valueid='', $class='')
-	{	
-		$elemenHTML ="<tr><td class='formHead'>";
-		$elemenHTML .= "<div id=\"".$name."_ui_label_wrapper\">";
-		$elemenHTML .="<strong><label for=\"".$name."_ui\">$label</label></strong>";
-		$elemenHTML .= "<tr><td><label id='info'>*seleccione una opci&oacute;n si aparece en la lista</label></td></tr>";
-		$elemenHTML .="</div>";
-		$elemenHTML .="</td></tr>";
-		$elemenHTML .="<tr><td class='inputRow'>";
-		$elemenHTML .= "<div id=\"".$name."_ui_input_wrapper\">";
-		$elemenHTML .= "<div class=\"ui-widget\">";
-		$elemenHTML .= "<input type='text' id=\"".$name."_ui\" name=\"".$name."_ui_name\" value=\"".$valuename."\" class=\"".$class."\" />";
-		$elemenHTML .= "</div>";
-		$elemenHTML .= "</div>";
-		$elemenHTML .="</td></tr>";
-		$elemenHTML .= "</div>";
-		$elemenHTML .= $this->hidden($name,$valueid);
-		return $elemenHTML;
-	}
-	
-	
-	protected function button($value, $event){
-		$elemenHTML ="<tr>\t\n<td colspan='2' align='center'>\t\n";
-		$elemenHTML .="<button type='button' class='btn btn-primary'  onclick='$event'><span >".$value."</span></button>";
-		$elemenHTML .="\t\n</td>\t\n</tr>\t\n";
-		return $elemenHTML;
-	}
-	
-	protected function submitButton($value){
-		$elemenHTML ="<tr>\t\n<td colspan='2'><center>\t\n";
-		$elemenHTML .="<button type='submit' class='btn btn-primary'><span >".$value."</span></button>";
-		$elemenHTML .="\t\n</center></td>\t\n</tr>\t\n";
-		return $elemenHTML;
-	}
-	
-	protected function choice($label, $choices, $name, $checked='', $title='', $event=''){
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<td class='formColumn value-column'>\t\n";
-		foreach($choices as $choice){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_VALUE}}'=> $value,
+		);
 
-			if($checked===$choice['value']){
-					
-				$elemenHTML .="<input onclick=\"$event('".$choice['value']."')\" class='radio' checked='checked' name='$name' type='radio' value='".$choice['value']."' onclick=\"".$choice['event']."\"/>".$choice['label'] . "<br><br>";
-			}else{
-				$elemenHTML .="<input onclick=\"$event('".$choice['value']."')\" class='radio' name='$name' type='radio' value='".$choice['value']."' onclick=\"".$choice['event']."\"/>".$choice['label'] . "<br><br>";
-			}
-		}
-		$elemenHTML .="\t\n</td>\t\n";
+        $elemenHTML = strtr( MVCFormTemplates::autocomplete() , $tmpList); 
+
 		return $elemenHTML;
 	}
 	
+	
+	protected function button($name, $label, $class='btn-primary' ,$event=''){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_BTN_CLASS}}'=> $class,
+			'{{MVC_EVENT}}' => $event,
+		);
 
-	protected function check($name, $label, $options, $title='', $values=array()){
-		
-		if(is_string($values))
-			$values=explode('|', $values);
-		$elemenHTML ="<tr><td class='formHead'><strong><label>$label</label></strong> <img title='$title' src='{{WEB.ROOT}}img/help.gif'/></td></tr>";
-		$elemenHTML .="<tr><td class='formColumn value-column'>";
+        $elemenHTML = strtr( MVCFormTemplates::button() , $tmpList); 
+		return $elemenHTML;
+	}
+	
+	protected function submitButton($name, $label, $class='btn-primary'){
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_LABEL}}' => $label,
+			'{{MVC_BTN_CLASS}}'=> $class
+		);
+
+        $elemenHTML = strtr( MVCFormTemplates::submitButton('') , $tmpList); 
+		return $elemenHTML;
+	}
+	
+	protected function choice($name, $title='Options', $choices,  $checked='' ){
+
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_TITLE}}' => $title,
+		);
+
+		$idx=0;
 		foreach($options as $option){
-			
-			if(in_array($option['value'], $values)){
-				
-				$elemenHTML .="<input class='check' type='checkbox' id='$name' name='$name' value='".$option['value']."' checked>".$option['label']."<br>";
-			}else{
-				$elemenHTML .="<input class='check' type='checkbox' id='$name' name='$name' value='".$option['value']."'>".$option['label']."<br>";
-			}
+			$tmpList['{{MVC_CHECK_'.$idx.'_LABEL}}'] = $option['label'];
+			$tmpList['{{MVC_CHECK_'.$idx.'_VALUE}}'] = $option['value'];
+			$tmpList['{{MVC_CHECK_'.$idx.'_CHECKED}}']= $option['value']==$selected ? 'checked':'';
+
+			$idx++;
 		}
-		$elemenHTML .="</td></tr>";
+		
+		$elemenHTML = strtr( MVCFormTemplates::choice(count($options)) , $tmpList); 
+
+		return $elemenHTML;
+	}
+	
+
+	protected function check( $name, $title='Options', $choices,  $checked='' ){
+		
+		if(is_string($options))
+			$values=explode('|', $values);
+
+		$tmpList = array(
+			'{{MVC_NAME}}' => $name,
+			'{{MVC_TITLE}}' => $title,
+		);
+
+		$idx=0;
+		foreach($options as $option){
+			$tmpList['{{MVC_CHECK_'.$idx.'_LABEL}}'] = $option['label'];
+			$tmpList['{{MVC_CHECK_'.$idx.'_VALUE}}'] = $option['value'];
+			$tmpList['{{MVC_CHECK_'.$idx.'_CHECKED}}']= $option['value']==$selected ? 'checked':'';
+
+			$idx++;
+		}
+		
+		$elemenHTML = strtr( MVCFormTemplates::check(count($options)) , $tmpList); 
+		
 		return $elemenHTML;
 	}
 	

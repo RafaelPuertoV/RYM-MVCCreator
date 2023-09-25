@@ -1,10 +1,16 @@
 
 var webURL = "";
 var apiURL = "./api/";
+var mvcMethod = "";
 
 function setWebUrl(weburl){
     webURL = weburl;
     apiURL = webURL + 'api/'
+}
+
+
+function setMethod(pMethod){
+    mvcMethod = pMethod;
 }
 
 var primaryKeyFields = [];
@@ -43,19 +49,20 @@ function updateProgressBar(loadinDiv) {
 } 
 
 
-function viewEdit(view_method,paramskeyId){
+function viewEdit(paramskeyId){
     let paramsURL = '';
     for (const key in listMainInfo[paramskeyId]){
         paramsURL+=key+'/'+listMainInfo[paramskeyId][key];
     }
-    //console.log(webURL+view_method+'/show/'+paramsURL);
-    window.location = webURL+view_method+'/show/'+paramsURL;
+    //console.log(webURL+mvcMethod+'/show/'+paramsURL);
+    window.location = webURL+mvcMethod+'/show/'+paramsURL;
 }
 
 
 function apiGetList(view_method,tableDest) {
+    console.log(tableDest);
     loading_show(tableDest);
-
+	setMethod(view_method)
     const xmlhttp = new XMLHttpRequest();
         xmlhttp.onload = function() {
         let repponseJson =  JSON.parse(xmlhttp.responseText) ;
@@ -80,24 +87,24 @@ function apiGetList(view_method,tableDest) {
                 tableHeader+='<th class="'+tdClass+'">'+colname+'</th>';
                 tableBody+='<td >'+repponseJson.data[key][colname]+'</td>';
             }
-            tableBody+='<td> <a class="btn btn-default" href="#" onclick="viewEdit(\''+view_method+'\',\''+key+'\')"> Edit </a> | ';
-            tableBody+=' <a class="btn btn-danger" href="#" onclick="apiDelete(\''+view_method+'\',\''+key+'\')"> Delete </td>';
+            tableBody+='<td> <a class="btn btn-default" href="#" onclick="viewEdit(\''+key+'\')"> Edit </a> | ';
+            tableBody+=' <a class="btn btn-danger" href="#" onclick="apiDelete(\''+key+'\')"> Delete </td>';
             tableBody+="</tr>";
         }
         tableHeader += '<th class="td-actions"></th>';
         document.getElementById(tableDest).innerHTML = '<thead><tr>'+tableHeader+' </tr></thead><tbody>' + tableBody +'</tbody>';
     }
-    xmlhttp.open("GET", apiURL + view_method +"/index/"+apiURL);
+    xmlhttp.open("GET", apiURL + mvcMethod +"/index/"+apiURL);
     xmlhttp.send();
 
 }
 
 
-function apiDelete(api_method,keyId){
+function apiDelete(keyId){
  /*
     var form = document.createElement("form");
     form.setAttribute("method", "post");
-    form.setAttribute("action", "./?method="+view_method+"&action=delete&actionType=viewForm&"+fieldName+"="+keyId);
+    form.setAttribute("action", "./?method="+mvcMethod+"&action=delete&actionType=viewForm&"+fieldName+"="+keyId);
  
     // Create an input element for Full Name
     var FN = document.createElement("input");
@@ -120,15 +127,35 @@ function apiDelete(api_method,keyId){
         let repponseJson =  JSON.parse(xmlhttp.responseText) ;
         if(repponseJson.status==200){
             alert(repponseJson.message);
-            apiGetList(api_method,'table-list');
+            apiGetList(mvcMethod,'table-list');
         }else{
             alert('Operation fail.')
         }
     }
-    xmlhttp.open("POST", apiURL+"/"+api_method+"/destroy");
+    xmlhttp.open("POST", apiURL+"/"+mvcMethod+"/destroy");
     
     xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xmlhttp.send(params);
+}
+
+
+function apiUpdate(){
+    const formElement = document.getElementById("form-"+mvcMethod);
+    const formData = new FormData(formElement);
+
+    const xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onload = function() {
+        let repponseJson =  JSON.parse(xmlhttp.responseText) ;
+        if(repponseJson.status==200){
+            alert(repponseJson.message);
+        }else{
+            alert('Operation fail.')
+        }
+    }
+
+    xmlhttp.open(formElement.method, apiURL+"/"+mvcMethod+"/update");
+    xmlhttp.send(formData);
 }
 
 function loadCatalog(){

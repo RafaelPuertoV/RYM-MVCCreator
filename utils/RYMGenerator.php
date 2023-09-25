@@ -98,10 +98,16 @@ class RYMGenerator
                 $cColumn->columnName=$column['COLUMN_NAME'];
                 $cColumn->DBType=$column['DATA_TYPE'];
                 $cColumn->DBTypeLength=$column['CHARACTER_MAXIMUM_LENGTH'];
+                if($column['DATA_TYPE']=='enum'){
+                    $cColumn->ENUMOptions=  str_replace('(','',str_replace(')','',substr($column['COLUMN_TYPE'],4,strlen($column['COLUMN_TYPE'])-4)));
+                }
+                
                 $column['COLUMN_KEY']=='PRI';
                 if($column['COLUMN_KEY']=='PRI'){
+                    $cColumn->primaryKey=true;
                     $cTable->primaryKeys[]=$cColumn->columnName;
                 }
+
                 $cTable->columns[]=$cColumn;
             }
             $cTable->foreingKeys = $this->db->getForeingeys($table);
@@ -224,9 +230,16 @@ class RYMGenerator
         
         foreach ( $_table->columns as $attrib) {
             $this->dbColumnTypes[$attrib->DBType]=$attrib->DBType;
+            $attribProperties = "\n/**\n    * DBType: ".$attrib->DBType ;
+            if($attrib->DBTypeLength!='')
+                $attribProperties .= "\n    * DBTypeLength: ".$attrib->DBTypeLength ;
+            if($attrib->ENUMOptions!='')
+                $attribProperties .= "\n    * ENUMOptions: ".$attrib->ENUMOptions ;
+            $attribProperties .= "\n*/";
             $tmpList = array(
                 '{{ATTRIBUTES.NAME}}' => $attrib->columnName,
                 '{{ATTRIBUTES.TYPE}}' => $attrib->getPHPType(),
+                '{{ATTRIBUTES.PROPERTIES}}' => $attribProperties
             );
             $attribList .=  strtr( $this->modelAttribItemTmp , $tmpList); 
             $attribGetSetList .=  strtr( $this->modelAttribGetSetTmp , $tmpList); 
@@ -318,9 +331,14 @@ class RYMGenerator
         #echo RYMDatabase::getArrayToHTMLTable($attributes); die();
         $attribList ='';
         $attribSetValues ='';
+        $primaryKeysArray ='';
         
         foreach ( $_table->columns as $attrib) {
             $attribSetValues .= str_replace('{{ATTRIBUTES.NAME}}',$attrib->columnName, $this->controllerAttribSetValueTmp ); 
+        }
+
+        foreach ( $_table->primaryKeys as $pKey) {
+            $primaryKeysArray .=  '"'.$pKey.'" => $_request["'.$pKey.'"],'; 
         }
 
         $tmpList = array(
@@ -328,7 +346,8 @@ class RYMGenerator
             '{{CLASS.PREFIX}}' => $this->config['MVC_PREFIX'],
             '{{CLASS.NAME}}'=> $_table->getModelNameClass(),
             '{{CLASS.PRIMARYKEY}}'=> count($_table->primaryKeys)?$_table->primaryKeys[0]:'id',
-            '{{CONTROLLER.SETITEM.VALUES}}'=> $attribSetValues 
+            '{{CONTROLLER.SETITEM.VALUES}}'=> $attribSetValues ,
+            '{{PRIMARYKEYS.FINDBY}}' => $primaryKeysArray,
         );
 
         $classTmp = strtr( $this->controllerClassTmp , $tmpList); 

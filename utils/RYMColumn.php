@@ -3,11 +3,11 @@
 class RYMColumn
 {
     public $columnName = '';
+    public $primaryKey = false;
     public $DBType = '';
     public $DBTypeLength = 0;
-    public $primaryKeys = array();
+    public $ENUMOptions = '';
 
-    public $foreingKeys = array();
 
     public function getPHPType(){
         /*

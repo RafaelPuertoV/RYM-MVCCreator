@@ -44,7 +44,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 
     public function store($_request)
     {
-        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array({{PRIMARYKEYS.FINDBY}}));
         if(is_null($items) || count($items)==0 ){       
              $response = array(
                 "message" => "Not found",
@@ -59,7 +59,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
         
         {{CONTROLLER.SETITEM.VALUES}}
         
-        $item::create();
+        $item->create();
 
         $response = array(
             "data" => $item,
@@ -70,7 +70,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 
     public function show($_request)
     {
-        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array({{PRIMARYKEYS.FINDBY}}));
         if(is_null($items) || count($items)==0 ){       
              $response = array(
                 "message" => "Not found",
@@ -85,10 +85,11 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
         if($_request['actionType'] == 'viewForm'){
 
             $Form = new MVCForm($item);
-
-            $parameters = array( );
-            
-            $view = $Form->getForm();  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
+            $Form->set_action('{{WEB.ROOT}}/api/{{CLASS.PREFIX}}{{CLASS.NAME}}/update');
+            $Form->set_formId('{{CLASS.PREFIX}}{{CLASS.NAME}}');
+            $parameters = array();
+            $view = $Form->getEditForm();  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
+            $view .="<script> setMethod('{{CLASS.PREFIX}}{{CLASS.NAME}}')</script>";
             $containerView = HTTPResponse::renderView($view,$parameters) ;
 
             $parameters = array( 
@@ -112,7 +113,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
 
     public function update( $_request )
     {
-        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array({{PRIMARYKEYS.FINDBY}}));
         if(is_null($items) || count($items)==0 ){       
              $response = array(
                 "message" => "Not found",
@@ -129,11 +130,13 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
             "message" => "Updated successfully",
             'status' => 200
         );
+
+        HTTPResponse::json($response);
     }
 
     public function destroy($_request)
     {
-        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array('{{CLASS.PRIMARYKEY}}' => $_request["{{CLASS.PRIMARYKEY}}"]));
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array({{PRIMARYKEYS.FINDBY}}));
 
         if(is_null($items) || count($items)==0 ){       
              $response = array(
