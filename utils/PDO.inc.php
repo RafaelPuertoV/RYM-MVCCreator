@@ -47,7 +47,7 @@ class  RYMDatabase {
 	}
 
 	function getColumns( $_tableName ){
-		$query = "SELECT c.COLUMN_NAME, c.DATA_TYPE,c.COLUMN_TYPE, c.CHARACTER_MAXIMUM_LENGTH , c.COLUMN_KEY
+		$query = "SELECT c.COLUMN_NAME, c.DATA_TYPE,c.COLUMN_TYPE, c.CHARACTER_MAXIMUM_LENGTH , c.COLUMN_KEY, IFNULL(c.COLUMN_DEFAULT,'') AS COLUMN_DEFAULT
 			FROM information_schema.COLUMNS c 
 			WHERE c.TABLE_SCHEMA LIKE '".$this->database."' AND c.TABLE_NAME LIKE '".$_tableName."'; ";
 		//echo '<br>'.$query.'<br>';

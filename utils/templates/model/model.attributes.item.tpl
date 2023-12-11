@@ -1,3 +1,3 @@
     
     {{ATTRIBUTES.PROPERTIES}}    
-    private ${{ATTRIBUTES.NAME}};
+    protected ${{ATTRIBUTES.NAME}} = {{ATTRIBUTES.DEFAULT.VALUE}};

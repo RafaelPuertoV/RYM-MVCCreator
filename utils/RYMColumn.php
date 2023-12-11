@@ -7,6 +7,7 @@ class RYMColumn
     public $DBType = '';
     public $DBTypeLength = 0;
     public $ENUMOptions = '';
+    public $default;
 
 
     public function getPHPType(){
@@ -40,6 +41,32 @@ class RYMColumn
             return $type_map[$this->DBType];
         }else{
             return 'text';
+        }
+    }
+
+    public function getPHPDefault(){
+
+        switch ($this->getPHPType()){
+            case "int":
+                if(is_null($this->default) || $this->default==''){
+                    $this->default=0;
+                }
+                return $this->default;
+            case  "string" :
+                if(is_null($this->default) || $this->default==''){
+                    $this->default='';
+                }
+                return "'".$this->default."'";
+            case  "float" :
+                if(is_null($this->default) || $this->default==''){
+                    $this->default=0;
+                }
+                return $this->default;
+            default:
+                if(is_null($this->default) || $this->default==''){
+                    $this->default='';
+                }
+                return $this->default;
         }
     }
 }

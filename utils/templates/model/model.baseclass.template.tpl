@@ -3,10 +3,10 @@
  * Base Model 
  *
  * @category   Pro
- * @package    RYMMVCCreator
- * @author     Rafael Puerto <rafael.puerto.v@gmail.com>
+ * @package    RYM-MVCCreator
+ * @author     Rafael Puerto V.<rafael.puerto.v@gmail.com>
  * @link       https://github.com/RafaelPuertoV/RYMMVCCreator
- * @see        RYMMCreator
+ * @see        RYM-MVCreator
  */
 
 namespace {{NAMESPACE}}\Models\Base;
@@ -30,6 +30,11 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Base implements \JsonSerializable
     }
 
     {{ATTRIBUTES.GET.SET}}
+
+    public static function getObjectClass(){
+        $class =  str_replace('Base\\','', substr(__CLASS__, 0,strlen(__CLASS__)-4));
+        return $class;
+    }
 
     public static function findBy($_parameters, $_options = null )
     {
@@ -68,7 +73,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Base implements \JsonSerializable
         self::$db = new MVCDataBase();
         $objList = self::$db->queryObject("SELECT * 
             FROM ".self::$table." 
-            " . $whereQ . $limit, $whereParameters ,__CLASS__);
+            " . $whereQ . $limit, $whereParameters , str_replace('Base', '', self::getObjectClass()));
 
         if (count($objList) > 0) {
             return $objList; 
@@ -101,7 +106,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Base implements \JsonSerializable
 
     public function create() 
     {
-        $parameters = get_class_vars(__CLASS__);
+        $parameters = get_class_vars(str_replace('Base', '', self::getObjectClass()));
 
         $columns='';
         $columnsValues = '';

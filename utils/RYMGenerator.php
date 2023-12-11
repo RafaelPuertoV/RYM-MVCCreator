@@ -21,6 +21,7 @@ class RYMGenerator
     var $modelClassTmp ;
     var $modelAttribItemTmp ;
     var $modelAttribGetSetTmp ;
+    var $modelAttribDefaultValuesTmp ;
       
     var $controllerClassTmp ;
     var $controllerAttribSetValueTmp ;
@@ -108,6 +109,10 @@ class RYMGenerator
                     $cTable->primaryKeys[]=$cColumn->columnName;
                 }
 
+                if($column['COLUMN_DEFAULT']!=''){
+                    $cColumn->default=$column['COLUMN_DEFAULT'];
+                }
+
                 $cTable->columns[]=$cColumn;
             }
             $cTable->foreingKeys = $this->db->getForeingeys($table);
@@ -143,9 +148,6 @@ class RYMGenerator
             if (is_dir($_currentFolder . '/' . $pth)) {
                 self::copyFolder($_currentFolder . '/' . $pth, $_destPath . '/' . $pth) ;
             } elseif (is_file($_currentFolder . '/' . $pth)) {
-                $tmpList = array(
-                    '{{NAMESPACE}}' => $this->config['MVC_NAMESPACE'],
-                );
                 $this->copyFile($_currentFolder . '/' . $pth, $_destPath . '/' . $pth);
             }
         }
@@ -239,7 +241,8 @@ class RYMGenerator
             $tmpList = array(
                 '{{ATTRIBUTES.NAME}}' => $attrib->columnName,
                 '{{ATTRIBUTES.TYPE}}' => $attrib->getPHPType(),
-                '{{ATTRIBUTES.PROPERTIES}}' => $attribProperties
+                '{{ATTRIBUTES.PROPERTIES}}' => $attribProperties,
+                '{{ATTRIBUTES.DEFAULT.VALUE}}'=> $attrib->getPHPDefault()
             );
             $attribList .=  strtr( $this->modelAttribItemTmp , $tmpList); 
             $attribGetSetList .=  strtr( $this->modelAttribGetSetTmp , $tmpList); 

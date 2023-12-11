@@ -49,18 +49,28 @@ function updateProgressBar(loadinDiv) {
 } 
 
 
+function viewAdd(){
+    window.location = webURL+mvcMethod+'/create/';
+}
+
 function viewEdit(paramskeyId){
     let paramsURL = '';
     for (const key in listMainInfo[paramskeyId]){
         paramsURL+=key+'/'+listMainInfo[paramskeyId][key];
     }
-    //console.log(webURL+mvcMethod+'/show/'+paramsURL);
+    window.location = webURL+mvcMethod+'/edit/'+paramsURL;
+}
+
+function viewShow(paramskeyId){
+    let paramsURL = '';
+    for (const key in listMainInfo[paramskeyId]){
+        paramsURL+=key+'/'+listMainInfo[paramskeyId][key];
+    }
     window.location = webURL+mvcMethod+'/show/'+paramsURL;
 }
 
 
 function apiGetList(view_method,tableDest) {
-    console.log(tableDest);
     loading_show(tableDest);
 	setMethod(view_method)
     const xmlhttp = new XMLHttpRequest();
@@ -71,7 +81,7 @@ function apiGetList(view_method,tableDest) {
         listMainInfo = [];
         for (const key in repponseJson.data){
             tableHeader = '';
-            tableBody+="<tr>";
+            tableRow = "";
             let keyId = 0;
             let params = [];
             listMainInfo[key] = {};
@@ -81,20 +91,25 @@ function apiGetList(view_method,tableDest) {
                     if(primaryKeyFields[pkey] == colname){
                         tdClass= 'bg-primary';
                         listMainInfo[key][colname] = repponseJson.data[key][colname];
+                        tableHeader = '<th class="'+tdClass+'">'+colname+'</th>'+ tableHeader;
+                        tableRow='<td>'+repponseJson.data[key][colname]+'</td>' + tableRow;
                         break;
                     }
                 }
-                tableHeader+='<th class="'+tdClass+'">'+colname+'</th>';
-                tableBody+='<td >'+repponseJson.data[key][colname]+'</td>';
+                if (tdClass==''){
+                    tableHeader+='<th class="'+tdClass+'">'+colname+'</th>';
+                    tableRow+='<td >'+repponseJson.data[key][colname]+'</td>';
+                }
             }
-            tableBody+='<td> <a class="btn btn-default" href="#" onclick="viewEdit(\''+key+'\')"> Edit </a> | ';
-            tableBody+=' <a class="btn btn-danger" href="#" onclick="apiDelete(\''+key+'\')"> Delete </td>';
-            tableBody+="</tr>";
+            tableRow+='<td> <a class="btn btn-primary" href="#" onclick="viewShow(\''+key+'\')"> <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View </a> ';
+            tableRow+=' <a class="btn btn-default" href="#" onclick="viewEdit(\''+key+'\')"> <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit </a>  ';
+            tableRow+=' <a class="btn btn-danger" href="#" onclick="apiDelete(\''+key+'\')"> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete </td>';
+            tableBody+= '<tr>'+tableRow+'</tr>';
         }
         tableHeader += '<th class="td-actions"></th>';
         document.getElementById(tableDest).innerHTML = '<thead><tr>'+tableHeader+' </tr></thead><tbody>' + tableBody +'</tbody>';
     }
-    xmlhttp.open("GET", apiURL + mvcMethod +"/index/"+apiURL);
+    xmlhttp.open("GET", apiURL + mvcMethod +"/index/");
     xmlhttp.send();
 
 }

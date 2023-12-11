@@ -8,6 +8,16 @@ class MVCAbstractForm{
 	public function __construct(){
 
 	}
+
+	protected function show($label, $name,  $value=''){
+		return '<div class="form-group">
+			<label for="'.$name.'" class="col-sm-2 control-label">'.$label.'</label>
+			<div class="col-sm-10">
+				<div class="form-control" id="'.$name.'" > '.$value.'</div>
+			</div>
+		</div>';
+	}
+	
 	/*
 	 */
 	protected function formHeader($header){

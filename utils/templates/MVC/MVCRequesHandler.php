@@ -64,6 +64,8 @@ class MVCRequesHandler
             //echo '<br><br>urlParams:'; var_dump($urlParams);
 
             for ($i=0; $i < count($urlParams) ; $i=$i+2 ) { 
+                if(!isset($urlParams[$i+1]))
+                    continue;
                 self::$requestedParams[$urlParams[$i]]= $urlParams[$i+1];
             }
             
@@ -101,11 +103,11 @@ class MVCRequesHandler
 
         if (self::$requestedController == 'Default')
         {
-            $controller = new \{{NAMESPACE}}\Controllers\{{NAMESPACE}}DefaultController();
+            $controller = new \{{NAMESPACE}}\Controllers\{{CLASS.PREFIX}}DefaultController();
             echo  $controller->index(array('actionType' => 'viewForm'));
         }else{
             $controllerName = self::$requestedController.'Controller';
-            $controllerClass = "\\RYMAPP\\Controllers\\".$controllerName;
+            $controllerClass = "\\{{NAMESPACE}}\\Controllers\\".$controllerName;
 
             if (class_exists($controllerClass))
             {

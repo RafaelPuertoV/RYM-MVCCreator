@@ -12,6 +12,7 @@ use ReflectionProperty;
 
 class MVCForm extends MVCAbstractForm{
 
+    private $modelObject;
     private $formId;
     private $formTitle ;
     private $formElements;
@@ -46,7 +47,7 @@ class MVCForm extends MVCAbstractForm{
         $this->formTitle = 'Form' ;
         $this->formElements = array();
         if(is_object($modelObject))
-            $this->setFormByObject($modelObject);
+            $this->modelObject =$modelObject;
        
     }
 
@@ -177,7 +178,6 @@ class MVCForm extends MVCAbstractForm{
                 default:
                     $htmlControl = $this->entryText( $column, str_replace('_',' ',$column), $modelObject->$methodName() ,'', $dbMaxlength );
                     break;
-               
             }
 
             $this->formElements[] = array(
@@ -189,11 +189,13 @@ class MVCForm extends MVCAbstractForm{
                 'valueType' => $getReturnType->getname(),
                 'value' =>  $modelObject->$methodName(),
                 'html' => $htmlControl,
+                'show' => $this->show(str_replace('_',' ',$column), $column, $modelObject->$methodName())
             );
 		}
     }
 
     public function getEditForm(){
+        $this->setFormByObject($this->modelObject);
         $form = '<form id="form-'.$this->formId.'" class="form-horizontal" action="'.$this->action.'" method="'.$this->method.'" >'
             . $this->formHeader( $this->formTitle  );
         foreach ($this->formElements as $key => $value) {
@@ -202,4 +204,25 @@ class MVCForm extends MVCAbstractForm{
         $form.=$this->formFooter($this->button('form-'.$this->formId.'_submit','Save','btn-primary', "onclick=\"apiUpdate('$this->formId')\""));
         return $form."</form>";
     }
+
+
+    public function getShowForm(){
+        $this->setFormByObject($this->modelObject);
+        $form = '<div  id="'.$this->formId.'" class="panel panel-default">
+            <div class="panel-heading">'.$this->formTitle  .'</div>
+            <div class="panel-body"> <form class="form-horizontal">';
+
+        foreach ($this->formElements as $key => $value) {
+            $form.= $value['show'];
+        }
+
+        $form .='</form></div>';
+
+        $form.=' <div class="panel-footer">'.$this->formFooter($this->button('form-'.$this->formId.'-go-back','Go to back','btn-primary', "onclick=\"history.go(-1)\"")).'</div>';
+      
+        $form.='</div>';
+        
+        return $form;
+    }
+    
 }

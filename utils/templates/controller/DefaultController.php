@@ -2,7 +2,6 @@
 
 namespace {{NAMESPACE}}\Controllers;
 
-use {{NAMESPACE}}\Models\{{NAMESPACE}}Academicos;
 use {{NAMESPACE}}\MVC\Http\HTTPResponse;
 
 class {{CLASS.PREFIX}}DefaultController

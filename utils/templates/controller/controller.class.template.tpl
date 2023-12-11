@@ -68,7 +68,7 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
         HTTPResponse::json($response);
     }
 
-    public function show($_request)
+    public function edit($_request)
     {
         $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array({{PRIMARYKEYS.FINDBY}}));
         if(is_null($items) || count($items)==0 ){       
@@ -89,6 +89,48 @@ class {{CLASS.PREFIX}}{{CLASS.NAME}}Controller
             $Form->set_formId('{{CLASS.PREFIX}}{{CLASS.NAME}}');
             $parameters = array();
             $view = $Form->getEditForm();  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
+            $view .="<script> setMethod('{{CLASS.PREFIX}}{{CLASS.NAME}}')</script>";
+            $containerView = HTTPResponse::renderView($view,$parameters) ;
+
+            $parameters = array( 
+                '{{DATABASE.NAME}}' => DB_NAME , 
+                '{{MVC.NAMESPACE}}' => '{{NAMESPACE}} :: {{CLASS.PREFIX}}{{CLASS.NAME}}',
+                '{{APP.CONTAINER}}' => $containerView
+            );
+
+            $responseView = file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'Core/base.template.html');
+            
+            HTTPResponse::View($responseView,$parameters) ;
+            exit();
+        }
+        
+        $response = array(
+            "data" => $item,
+            'status' => 200
+        );
+        HTTPResponse::json($response);
+    }
+
+    public function show($_request)
+    {
+        $items = {{CLASS.PREFIX}}{{CLASS.NAME}}::findBy(array({{PRIMARYKEYS.FINDBY}}));
+        if(is_null($items) || count($items)==0 ){       
+             $response = array(
+                "message" => "Not found",
+                'status' => 404
+            );
+            HTTPResponse::json($response);
+            exit();
+        }
+
+        $item = $items[0];
+
+        if($_request['actionType'] == 'viewForm'){
+
+            $Form = new MVCForm($item);
+            $Form->set_formId('{{CLASS.PREFIX}}{{CLASS.NAME}}');
+            $parameters = array();
+            $view = $Form->getShowForm();  // file_get_contents(\{{NAMESPACE}}\MVC\Controllers\MVCController::viewsPath().'{{CLASS.PREFIX}}{{CLASS.NAME}}/index.php');
             $view .="<script> setMethod('{{CLASS.PREFIX}}{{CLASS.NAME}}')</script>";
             $containerView = HTTPResponse::renderView($view,$parameters) ;
 
