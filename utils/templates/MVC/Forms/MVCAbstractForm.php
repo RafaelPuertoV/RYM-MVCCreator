@@ -13,7 +13,7 @@ class MVCAbstractForm{
 		return '<div class="form-group">
 			<label for="'.$name.'" class="col-sm-2 control-label">'.$label.'</label>
 			<div class="col-sm-10">
-				<div class="form-control" id="'.$name.'" > '.$value.'</div>
+				<div class="form-control" id="'.$name.'" style="height: auto;" > '.$value.'</div>
 			</div>
 		</div>';
 	}
