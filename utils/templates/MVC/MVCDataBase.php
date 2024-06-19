@@ -381,6 +381,7 @@ public function queryObject($query, $params = null, $className )
                 $this->editLog($log, $date, $message);
             }
         } else {
+            umask(000);
             if (mkdir($this->logPath, 0777, true) === true) {
                    $this->writeLog($message);
             }

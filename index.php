@@ -4,7 +4,7 @@ require 'utils/RYMGenerator.php';
 
 $rymGen = new RYMGenerator();
 
-echo '<a href="./'.str_replace(__DIR__,'',$rymGen->mvcPath).'public/" target="_blank"> View MVC Site </a>';
+echo '<a href="./'.str_replace(__DIR__,'',$rymGen->config->getMVCPath()).'public/" target="_blank"> View MVC Site </a>';
 
 echo $rymGen->createMVCBase();
 echo $rymGen->generateModelAll();

@@ -22,7 +22,7 @@ class {{CLASS.PREFIX}}DefaultController
                 $tbody.='<tr><td>'.($idx++)
                     .'</td><td class="catalog-item" >'
                     .$method.'</td>
-                        <td><a href="./'.$method.'/index/" > View </a></td></tr>';
+                        <td><a href="'.\{{NAMESPACE}}\MVC\MVCRequesHandler::$web_root.$method.'/index/" > View </a></td></tr>';
             }
             $parameters = array(
                 '{{HOMEPAGE.TBODY}}'=>$tbody

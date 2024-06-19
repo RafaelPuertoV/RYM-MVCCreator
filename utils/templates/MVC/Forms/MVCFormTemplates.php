@@ -150,7 +150,7 @@ class MVCFormTemplates{
                 </label>
                 <div class="col-sm-offset-2 col-sm-10">';
         
-        for ($idx=0; $idx < count(totalOptions); $idx++) { 
+        for ($idx=0; $idx < count($totalOptions); $idx++) { 
             $elemenHTML ='<div class="checkbox">
                         <label>
                             <input type="radio"  
@@ -177,7 +177,7 @@ class MVCFormTemplates{
                 </label>
                 <div class="col-sm-offset-2 col-sm-10">';
         
-        for ($idx=0; $idx < count(totalOptions); $idx++) { 
+        for ($idx=0; $idx < count($totalOptions); $idx++) { 
             $elemenHTML ='<div class="checkbox">
                         <label>
                             <input type="checkbox"  
